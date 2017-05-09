@@ -55,6 +55,8 @@ public abstract class Entity {
                 h2+p2.y>height;
     }
 
+
+
     boolean containsPoint(FloatPoint point){
         return point.x >= pos.x && point.x < pos.x + width && point.y >= pos.y && point.y < pos.y + height;
     }

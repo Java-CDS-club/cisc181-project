@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import java.util.ArrayList;
+
 /**
  * Created by jimmy on 5/8/17.
  */
@@ -12,10 +14,17 @@ import android.graphics.Paint;
 public class Asteroid extends Entity {
 
     Bitmap sprite;
+    ArrayList<Item> contents = new ArrayList<Item>();
 
     Asteroid(FloatPoint pos, FloatPoint vel, FloatPoint acc){
         super(pos,vel,acc);
         health = 10;
+
+        Item i = new Item();
+        i.worth =10;
+        i.name = "meme";
+
+        contents.add(i);
     }
 
     public void setSprite(Bitmap b){
