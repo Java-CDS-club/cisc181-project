@@ -166,6 +166,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             Entity e = it.next();
             if(e.dead){
                 it.remove();
+                
             }else {
                 e.update();
                 e.render(canvas, mPaint, camera);
