@@ -18,7 +18,11 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -72,14 +76,29 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
     Ship playerShip;
     Asteroid aste = new Asteroid(new FloatPoint(500,500), new FloatPoint(0,0), new FloatPoint(0,0));
+    Shop shop = new Shop(new FloatPoint(300,800), new FloatPoint(0,0), new FloatPoint(0,0));
 
     ArrayList<Entity> entities = new ArrayList<Entity>();
+
+    SoundPool sp;
+    int explosion;
+    MediaPlayer booster;
+    Bitmap ironImage;
+    Bitmap spaceStation;
+
 
     // constructor
 
     public MyAnimatedSurfaceView(Context context, AttributeSet attrs) {
 
         super(context, attrs);
+
+        booster = MediaPlayer.create(context,R.raw.booster2);
+       // booster.setVideoScalingMode();
+        booster.setLooping(true);
+        sp = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);  // deprecated from API level 21 on
+        explosion = sp.load(context, R.raw.expl, 1);
+        booster.setVolume(0.2f,0.2f);
 
         myThread = new MyThread(this);
 
@@ -109,8 +128,16 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         ast = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
         bmap = Bitmap.createScaledBitmap(bmap,256,256,false);
         ast = Bitmap.createScaledBitmap(ast,256,256,false);
+        spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),256,256,false);
+
+
+        ironImage = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
+        ironImage = Bitmap.createScaledBitmap(ironImage,256,256,false);
+
 
         playerShip.setSprite(bmap);
+        shop.setSprite(spaceStation);
+        entities.add(shop);
         aste.setSprite(ast);
         aste.width=256;
         aste.height=256;
@@ -118,18 +145,15 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         //entities.add(aste);
 
         for(int i = 0; i < 100; i++){
-            //Math.random()*2000;
             Random r = new Random();
             float randomX = (float)r.nextInt(10000);
             float randomY = (float)r.nextInt(10000);
             float randomVelX = (float)r.nextInt(10-5+1)-5;
             float randomVelY = (float)r.nextInt(10-5+1)-5;
             Asteroid a = new Asteroid(new FloatPoint(randomX,randomY), new FloatPoint(randomVelX,randomVelY), new FloatPoint(0,0));
-            Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
-            img = Bitmap.createScaledBitmap(img,256,256,false);
             a.width=256;
             a.height=256;
-            a.setSprite(img);
+            a.setSprite(ast);
             entities.add(a);
         }
        // a.setSprite(ast);
@@ -179,23 +203,10 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     Camera camera = new Camera(new FloatPoint(0,0));
 
 
-    public boolean collide(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2){
-        return x1<x2+w2 &&
-                x1+w1 > x2 &&
-                y1 < y2+h2 &&
-                h1+y1>h2;
-    }
-
-    public boolean collide(FloatPoint pos1, float w1, float h1, FloatPoint pos2, float w2, float h2){
-        return pos1.x<pos2.x+w2 &&
-                pos1.x+w1 > pos2.x &&
-                pos1.y < pos2.y+h2 &&
-                h1+pos1.y>h2;
-    }
-
     public void myDraw(Canvas canvas) {
         camera = new Camera(new FloatPoint(playerShip.pos.x-PLAYER_CENTER_X, playerShip.pos.y-PLAYER_CENTER_Y));
-        canvas.drawColor(Color.WHITE);
+        //canvas.drawColor(Color.BLACK);
+        canvas.drawColor(Color.parseColor("#17132c"));
 
 
         playerShip.update();
@@ -211,16 +222,31 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             }else {
                 e.update();
                 if(e instanceof Asteroid){
-                    if(e.dead){
+                    //Log.d("Tag","YES");
+                    Asteroid ast = (Asteroid)e;
+                    if(ast.dead){
                         //TODO
+                        sp.play(explosion, 1f, 1f, 0, 0, 1f);
+                        Log.d("Hit ast","Hit it!");
                         //Add stuff with the cargo
-                        Item i = new Item();
-                        i.pos = e.pos;
-                        i.vel = new FloatPoint(1,1);
-                        Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
-                        img = Bitmap.createScaledBitmap(img,256,256,false);
-                        i.setSprite(img);
-                        toAdd.add(i);
+                        //Item i = new Item();
+                        //i.pos = e.pos;
+                        //i.vel = new FloatPoint(1,1);
+                        //Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
+                        //img = Bitmap.createScaledBitmap(img,256,256,false);
+
+                        //i.setSprite(img);
+                        ArrayList<Item> cargo = ast.dropCargo();
+                        //toAdd.addAll(ast.dropCargo());
+                        for(Item z: cargo){
+                            Log.d("Hit","cargo");
+                            z.setSprite(ironImage);
+                        }
+
+
+
+                        toAdd.addAll(cargo);
+                        //toAdd.add(i);
                         //entities.add(i);
                     }
                 }
@@ -242,6 +268,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
     public boolean onTouchEvent(MotionEvent e) {
         if(e.getAction() == MotionEvent.ACTION_DOWN){
+            booster.start();
             FloatPoint touchPosWorld = camera.screenToWorldPos(new FloatPoint(e.getX(),e.getY()));
             ArrayList<Entity> toAdd = new ArrayList<Entity>();
 
@@ -254,6 +281,10 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                     }
                 }
             }
+        }
+
+        if(e.getAction() == MotionEvent.ACTION_UP){
+            booster.pause();
         }
 
         if(e.getAction() == MotionEvent.ACTION_MOVE){

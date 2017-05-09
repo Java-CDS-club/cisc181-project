@@ -2,6 +2,7 @@ package cisc181.finalproject;
 
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -41,6 +42,16 @@ public class Asteroid extends Entity {
             dead = true;
         }
         runPhysics();
+    }
+
+    public ArrayList<Item> dropCargo(){
+        ArrayList<Item> toDrop = contents;
+        for(Item i: toDrop){
+            i.pos = pos;
+            i.vel = new FloatPoint(1,1);
+        }
+       // contents.clear();
+        return toDrop;
     }
 
     @Override
