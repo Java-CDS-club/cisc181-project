@@ -6,6 +6,10 @@ import android.graphics.Point;
 
 /**
  * Created by jimmy on 5/8/17.
+ *
+ * Entity
+ * A general physics enabled entity that has acceleration, velocity, and position =
+ * Plus health, width, height, etc etc
  */
 
 public abstract class Entity {
@@ -30,6 +34,8 @@ public abstract class Entity {
     }
 
     abstract void update();
+
+    //Renders on the canvas (with the camera transformation)
     abstract void render(Canvas canvas, Paint paint, Camera camera);
 
     void addHealth(int toAdd){
@@ -40,6 +46,7 @@ public abstract class Entity {
         addHealth(-toAdd);
     }
 
+    //Numerical integration!
     void runPhysics(){
         vel.x += acc.x;
         vel.y += acc.y;
@@ -48,6 +55,7 @@ public abstract class Entity {
         pos.y += vel.y;
     }
 
+    //Check if a rectangle collides with these bounds
     boolean collides(FloatPoint p2, float w2, float h2){
         return p2.x<pos.x+width &&
                 p2.x+w2 > pos.x &&
@@ -55,14 +63,12 @@ public abstract class Entity {
                 h2+p2.y>height;
     }
 
-
-
+    //Check if the bounds contain a point
     boolean containsPoint(FloatPoint point){
         return point.x >= pos.x && point.x < pos.x + width && point.y >= pos.y && point.y < pos.y + height;
     }
 
     void setAcc(FloatPoint acc){
         this.acc = new FloatPoint(accelScalar*acc.x, accelScalar*acc.y);
-       // this.acc = acc;
     }
 }

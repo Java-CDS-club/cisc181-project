@@ -10,6 +10,10 @@ import java.util.ArrayList;
 
 /**
  * Created by jimmy on 5/8/17.
+ *
+ * Asteroid
+ * Your run of the mill rock in space
+ * Contains cargo that drops upon destruction
  */
 
 public class Asteroid extends Entity {
@@ -44,6 +48,7 @@ public class Asteroid extends Entity {
         runPhysics();
     }
 
+    //Drops the cargo in the space
     public ArrayList<Item> dropCargo(){
         ArrayList<Item> toDrop = contents;
         for(Item i: toDrop){

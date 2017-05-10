@@ -2,6 +2,9 @@ package cisc181.finalproject;
 
 /**
  * Created by jimmy on 5/8/17.
+ *
+ * Camera
+ * Used to give the illusion of a camera tracking the player ship by instead rendering all other objects based on a simple transformation
  */
 
 public class Camera {

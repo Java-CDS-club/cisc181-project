@@ -4,7 +4,7 @@ package cisc181.finalproject;
 
 SimpleAnimate app -- animated drawing in a separate thread
 
-Christopher Rasmussen
+Code Template by Christopher Rasmussen
 copyright 2017, University of Delaware
 
 */
@@ -41,67 +41,49 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
     private MyThread myThread;
 
-    Paint mPaint, mPaintHit, mPaintMiss;
+    Paint mPaint;
     Bitmap bmap, ast;
-
-    // object position, velocity
-
-    int xPos = 0;
-    int yPos = 0;
-    double xDelta = 5;
-    double yDelta = 5;
-    double xAccel = 1.1;
-    double yAccel = 1.1;
 
     float PLAYER_CENTER_X = 200;
     float PLAYER_CENTER_Y = 200;
     float SCREEN_WIDTH = 0;
     float SCREEN_HEIGHT = 0;
 
-    // object orientation
-
-    int angleDegs = 0;
-    int angleDegsDelta = 5;
-
-    // object scale
-
-    float scaleFactor = 3.0f;
-
-    // touch activity
-
-    boolean touchDown = false;
-    boolean touchStarted = false;
-    boolean touchHit = false;
-    float touchX, touchY;
-
+    //Init objects
     Ship playerShip;
     Asteroid aste = new Asteroid(new FloatPoint(500,500), new FloatPoint(0,0), new FloatPoint(0,0));
     Shop shop = new Shop(new FloatPoint(300,800), new FloatPoint(0,0), new FloatPoint(0,0));
 
+    //Contains all of the updatable objects that aren't the player
     ArrayList<Entity> entities = new ArrayList<Entity>();
 
     SoundPool sp;
     int explosion;
     MediaPlayer booster;
+    MediaPlayer music;
     Bitmap ironImage;
     Bitmap spaceStation;
 
-
-    // constructor
-
+    //Constructor
     public MyAnimatedSurfaceView(Context context, AttributeSet attrs) {
-
         super(context, attrs);
 
+        //Init sounds
         booster = MediaPlayer.create(context,R.raw.booster2);
-       // booster.setVideoScalingMode();
+        music = MediaPlayer.create(context,R.raw.space);
+        music.setVolume(0.4f,0.4f);
+        music.setLooping(true);
+        //music.start();
         booster.setLooping(true);
+
         sp = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);  // deprecated from API level 21 on
         explosion = sp.load(context, R.raw.expl, 1);
         booster.setVolume(0.2f,0.2f);
 
+        //Init threads
         myThread = new MyThread(this);
 
+        //Getting the size of our screen/canvas
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display d = wm.getDefaultDisplay();
         Point size = new Point();
@@ -111,26 +93,22 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         SCREEN_HEIGHT = size.y;
         PLAYER_CENTER_X = size.x/2;
         PLAYER_CENTER_Y = size.y/2;
-        playerShip = new Ship(new FloatPoint(PLAYER_CENTER_X,PLAYER_CENTER_Y), new FloatPoint(0,0), new FloatPoint(0,0));
 
+
+        //Set up paint
         mPaint = new Paint();
         mPaint.setStrokeWidth(5);
 
-        mPaintHit = new Paint();
-        ColorFilter redFilter = new LightingColorFilter(Color.RED, 0);
-        mPaintHit.setColorFilter(redFilter);
+        //Init player
+        playerShip = new Ship(new FloatPoint(PLAYER_CENTER_X,PLAYER_CENTER_Y), new FloatPoint(0,0), new FloatPoint(0,0));
 
-        mPaintMiss = new Paint();
-        ColorFilter blueFilter = new LightingColorFilter(Color.BLUE, 0);
-        mPaintMiss.setColorFilter(blueFilter);
 
+        //Image loading
         bmap = BitmapFactory.decodeResource(getResources(), R.drawable.ship);
         ast = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
         bmap = Bitmap.createScaledBitmap(bmap,256,256,false);
         ast = Bitmap.createScaledBitmap(ast,256,256,false);
         spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),256,256,false);
-
-
         ironImage = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
         ironImage = Bitmap.createScaledBitmap(ironImage,256,256,false);
 
@@ -142,8 +120,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         aste.width=256;
         aste.height=256;
 
-        //entities.add(aste);
-
+        //Generate a random asteroid field
+        //TODO make it more uniformly distributed
         for(int i = 0; i < 100; i++){
             Random r = new Random();
             float randomX = (float)r.nextInt(10000);
@@ -156,12 +134,12 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             a.setSprite(ast);
             entities.add(a);
         }
-       // a.setSprite(ast);
 
         SurfaceHolder holder = getHolder();
 
-        // implement SurfaceHolder.Callback interface with anonymous inner class
 
+        //Weird thread stuff
+        //It just werks
         holder.addCallback(new SurfaceHolder.Callback() {
 
             // start draw thread
@@ -195,69 +173,66 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
     }
 
-    // do drawing on current canvas
-
-    float cameraX = 0;
-    float cameraY = 0;
-    //FloatPoint camera = new FloatPoint(0,0);
+    //Init world camera
     Camera camera = new Camera(new FloatPoint(0,0));
+
+    //A nice spacey blue
+    String backgroundColor = "#17132c";
 
 
     public void myDraw(Canvas canvas) {
+        //Update camera based on player position
         camera = new Camera(new FloatPoint(playerShip.pos.x-PLAYER_CENTER_X, playerShip.pos.y-PLAYER_CENTER_Y));
-        //canvas.drawColor(Color.BLACK);
-        canvas.drawColor(Color.parseColor("#17132c"));
 
+        //Draw background solor
+        canvas.drawColor(Color.parseColor(backgroundColor));
 
         playerShip.update();
 
-        Iterator<Entity> it = entities.iterator();
-
+        //Update all of the entities in the world
         //Use an iterator so we can safely remove entities
+        Iterator<Entity> it = entities.iterator();
         ArrayList<Entity> toAdd = new ArrayList<Entity>();
         while(it.hasNext()){
             Entity e = it.next();
+
             if(e.dead){
+                //Remove the entity if it is dead
                 it.remove();
             }else {
+                //Update it
                 e.update();
-                if(e instanceof Asteroid){
-                    //Log.d("Tag","YES");
-                    Asteroid ast = (Asteroid)e;
-                    if(ast.dead){
-                        //TODO
-                        sp.play(explosion, 1f, 1f, 0, 0, 1f);
-                        Log.d("Hit ast","Hit it!");
-                        //Add stuff with the cargo
-                        //Item i = new Item();
-                        //i.pos = e.pos;
-                        //i.vel = new FloatPoint(1,1);
-                        //Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
-                        //img = Bitmap.createScaledBitmap(img,256,256,false);
 
-                        //i.setSprite(img);
+                //For asteroids
+                //TODO why does this work when it already checks for dead?
+                if(e instanceof Asteroid){
+                    Asteroid ast = (Asteroid)e;
+
+                    //If asteroid is dead, spew out the bounty
+                    if(ast.dead){
+                        sp.play(explosion, 1f, 1f, 0, 0, 1f);
+
                         ArrayList<Item> cargo = ast.dropCargo();
-                        //toAdd.addAll(ast.dropCargo());
+
                         for(Item z: cargo){
-                            Log.d("Hit","cargo");
+                           // Log.d("Hit","cargo");
                             z.setSprite(ironImage);
                         }
 
-
-
+                        //Add cargo to toAdd
                         toAdd.addAll(cargo);
-                        //toAdd.add(i);
-                        //entities.add(i);
                     }
                 }
                 e.render(canvas, mPaint, camera);
             }
         }
 
+        //Add entities to the world, since we can't do it concurrently
         for(Entity e: toAdd){
             entities.add(e);
         }
 
+        //Draw the player ship
         canvas.save();
         canvas.rotate(playerShip.angle-45+90, PLAYER_CENTER_X, PLAYER_CENTER_Y);
         canvas.drawBitmap(playerShip.getSprite(), PLAYER_CENTER_X-playerShip.getSprite().getWidth()/2, PLAYER_CENTER_Y-playerShip.getSprite().getHeight()/2,mPaint);
@@ -265,15 +240,18 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     }
 
     // respond to the SurfaceView being clicked/dragged
-
     public boolean onTouchEvent(MotionEvent e) {
+
+        //Finger down (fires once)
         if(e.getAction() == MotionEvent.ACTION_DOWN){
             booster.start();
             FloatPoint touchPosWorld = camera.screenToWorldPos(new FloatPoint(e.getX(),e.getY()));
-            ArrayList<Entity> toAdd = new ArrayList<Entity>();
 
+            //Check which entity we touch
             for(Entity ent: entities){
                 if(ent.containsPoint(touchPosWorld)){
+
+                    //If it is an asteroid, do damage to it
                     if(ent instanceof Asteroid){
                         Asteroid a = (Asteroid)ent;
                         a.removeHealth(playerShip.damage);
@@ -283,18 +261,25 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             }
         }
 
+        //Finger up
         if(e.getAction() == MotionEvent.ACTION_UP){
             booster.pause();
         }
 
+        //Finger dragging
         if(e.getAction() == MotionEvent.ACTION_MOVE){
+
+            //Convert the point touched on screen to world coordinates
             FloatPoint touch = camera.screenToWorldPos(new FloatPoint(e.getX(),e.getY()));
 
+            //Calculate the angle between the touch point and the player
             float theta = (float)Math.atan2((touch.y-playerShip.pos.y),(touch.x-playerShip.pos.x));
 
+            //Set acceleration using trig
             playerShip.setAcc(new FloatPoint((float)Math.cos(theta), (float)Math.sin(theta)));
             playerShip.angle = (float)Math.toDegrees(theta);
         }else{
+            //If we're not touching, stop accelerating
             playerShip.setAcc(new FloatPoint(0,0));
         }
 

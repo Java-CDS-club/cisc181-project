@@ -7,6 +7,10 @@ import android.graphics.Point;
 
 /**
  * Created by jimmy on 5/8/17.
+ *
+ * Ship
+ * The ship the player controls.
+ * Onwards, trusty steed!
  */
 
 public class Ship extends Entity {
@@ -22,6 +26,9 @@ public class Ship extends Entity {
 
     @Override
     void update() {
+        //If there is no acceleration, slow down the ship
+        //YES I KNOW THERE IS NO DRAG IN SPACE
+        //BUT ITS FOR GAMEPLAY GEEZ
         if(acc.x == 0 && acc.y == 0){
             vel.x*=drag;
             vel.y*=drag;
@@ -40,7 +47,7 @@ public class Ship extends Entity {
 
     @Override
     void render(Canvas canvas, Paint paint, Camera camera) {
-        canvas.save();
-        canvas.restore();
+        //canvas.save();
+        //canvas.restore();
     }
 }

@@ -6,6 +6,9 @@ import android.graphics.Paint;
 
 /**
  * Created by jimmy on 5/8/17.
+ *
+ * Item
+ * An item/mineral that you can sell for money
  */
 
 public class Item extends Entity{
