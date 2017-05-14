@@ -6,7 +6,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -15,39 +17,39 @@ import java.util.ArrayList;
 
 public class SaveLoad {
 
-    static void save(Entity e, Context context){
+    static void save(ArrayList<Entity> eList, Context context){
         //SharedPreferences mPref = ap
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = prefs.edit();
-
-
-        Item i = new Item();
-        i.name = "Meme1";
-        i.worth = 69;
-
-        e = i;
-//
+        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<Asteroid> asteroids = new ArrayList<>();
+        for(Entity e : eList) {
+            if (e instanceof Item)
+                items.add((Item) e);
+            else
+                asteroids.add((Asteroid) e);
+        }
         Gson gson = new Gson();
-       String json = gson.toJson(e);
-        edit.putString("Test",json);
+        String itemJSon = gson.toJson(items);
+        String asterJSon = gson.toJson(asteroids);
+        edit.putString("ITEMS",itemJSon);
+        edit.putString("ASTERS",asterJSon);
         edit.commit();
-//        //String json = gson.
-//       // String json = gson.toJSon();
     }
 
-    static Item load(Context context){
+    static ArrayList<Entity> load(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = prefs.edit();
-//
-      Gson gson = new Gson();
-        String json = prefs.getString("Test", "");
-        Entity z = gson.fromJson(json,Entity.class);
-        Item i = (Item)z;
-        return i;
-       // return json;
-//        Entity ent = gson.fromJson(json, Entity.class);
-//        Log.d("ITEM","Loaded!");
-//        Item z = (Item)ent;
-//        return z;
+        Gson gson = new Gson();
+        String itemJSon = prefs.getString("ITEMS", "");
+        Type type = new TypeToken<ArrayList<Item>>(){}.getType();
+        ArrayList<Item> i = gson.fromJson(itemJSon,type);
+        String asterJSon = prefs.getString("ASTERS","");
+        type = new TypeToken<ArrayList<Asteroid>>(){}.getType();
+        ArrayList<Asteroid> a = gson.fromJson(asterJSon,type);
+        ArrayList<Entity> entities = new ArrayList<>();
+        entities.addAll(i);
+        entities.addAll(a);
+        return entities;
     }
 }

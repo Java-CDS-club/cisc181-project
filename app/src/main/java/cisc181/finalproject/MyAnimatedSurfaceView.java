@@ -143,20 +143,9 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             entities.add(a);
         }
 
-       Item i = new Item();
-//        i.worth = 420;
-//        i.name = "ooga chacka";
-//        //SaveLoad.save(i, context);
-        SaveLoad.save(i, context);
-     // Log.d("ITEM", SaveLoad.load(context).name);
-       // Log.d("ITEM", SaveLoad.load(context).worth+"");
-//
-//       Item z = SaveLoad.load(context);
-//
-//        Log.d("ITEM", z.name);
-//        Log.d("ITEM", z.worth+"");
 
-       // SaveLoad.save(entities, context);
+
+       testSaveLoad(context);
 
 
         SurfaceHolder holder = getHolder();
@@ -377,5 +366,25 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         }
 
         return true;
+    }
+
+    public void testSaveLoad(Context context){
+        Item i = new Item();
+        i.worth = 420;
+        i.name = "ooga chacka";
+        ArrayList<Entity>saveItems = new ArrayList<Entity>();
+        Asteroid a = new Asteroid(new FloatPoint(0,0),new FloatPoint(0,0),new FloatPoint(0,0));
+        saveItems.add(i);
+        saveItems.add(a);
+        saveItems.add(i);
+        saveItems.add(a);
+        SaveLoad.save(saveItems, context);
+        Log.d("ITEM","SAVED");
+        ArrayList<Entity> loadItems= SaveLoad.load(context);
+        Log.d("ITEM", "LOADED");
+        Log.d("ITEM",loadItems.size()+"");
+        for(Object j : loadItems){
+            Log.d("ITEM",j.getClass()+"");
+        }
     }
 }
