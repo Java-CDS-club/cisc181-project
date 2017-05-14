@@ -67,6 +67,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
     //Constructor
     public MyAnimatedSurfaceView(Context context, AttributeSet attrs) {
+
         super(context, attrs);
 
         //Init sounds
@@ -141,6 +142,22 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             a.setSprite(ast);
             entities.add(a);
         }
+
+       Item i = new Item();
+//        i.worth = 420;
+//        i.name = "ooga chacka";
+//        //SaveLoad.save(i, context);
+        SaveLoad.save(i, context);
+     // Log.d("ITEM", SaveLoad.load(context).name);
+       // Log.d("ITEM", SaveLoad.load(context).worth+"");
+//
+//       Item z = SaveLoad.load(context);
+//
+//        Log.d("ITEM", z.name);
+//        Log.d("ITEM", z.worth+"");
+
+       // SaveLoad.save(entities, context);
+
 
         SurfaceHolder holder = getHolder();
 
