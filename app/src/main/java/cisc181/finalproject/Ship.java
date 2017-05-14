@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 
+import java.util.ArrayList;
+
 /**
  * Created by jimmy on 5/8/17.
  *
@@ -18,10 +20,24 @@ public class Ship extends Entity {
     float drag = 0.90f;
     int damage = 5;
     Bitmap sprite;
+    ArrayList<Item> cargo = new ArrayList<Item>();
+    int currentFuel = 5000;
+    int maxFuel = 5000;
+
+    int maxHealth = 100;
+    int currentHealth = 100;
 
     Ship(FloatPoint pos, FloatPoint vel, FloatPoint acc){
         super(pos,vel,acc);
         accelScalar=0.5f;
+        reboundSpeed=7;
+    }
+
+    @Override
+    public void handleCollision(int collisionDir) {
+        super.handleCollision(collisionDir);
+
+        currentHealth-=1;
     }
 
     @Override
@@ -32,6 +48,9 @@ public class Ship extends Entity {
         if(acc.x == 0 && acc.y == 0){
             vel.x*=drag;
             vel.y*=drag;
+            currentFuel-=1;
+        }else{
+            currentFuel-=2;
         }
 
         runPhysics();
@@ -47,6 +66,7 @@ public class Ship extends Entity {
 
     @Override
     void render(Canvas canvas, Paint paint, Camera camera) {
+        renderBounds(canvas,paint,camera);
         //canvas.save();
         //canvas.restore();
     }

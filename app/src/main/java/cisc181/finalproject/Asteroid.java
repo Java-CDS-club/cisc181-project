@@ -64,6 +64,7 @@ public class Asteroid extends Entity {
         //canvas.save();
         FloatPoint screenPos = camera.worldToScreenPos(pos);
         canvas.drawBitmap(sprite,screenPos.x,screenPos.y,paint);
+        renderBounds(canvas,paint,camera);
         //canvas.restore();
     }
 }

@@ -63,6 +63,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     MediaPlayer music;
     Bitmap ironImage;
     Bitmap spaceStation;
+    Bitmap arrow;
 
     //Constructor
     public MyAnimatedSurfaceView(Context context, AttributeSet attrs) {
@@ -70,15 +71,18 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         //Init sounds
         booster = MediaPlayer.create(context,R.raw.booster2);
+
+        booster.setVolume(0.2f, 0.2f);
         music = MediaPlayer.create(context,R.raw.space);
-        music.setVolume(0.4f,0.4f);
+        music.setVolume(0.8f,0.8f);
         music.setLooping(true);
-        //music.start();
+       // music.start();
         booster.setLooping(true);
 
         sp = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);  // deprecated from API level 21 on
         explosion = sp.load(context, R.raw.expl, 1);
-        booster.setVolume(0.2f,0.2f);
+
+        booster.setVolume(0.8f,0.8f);
 
         //Init threads
         myThread = new MyThread(this);
@@ -91,8 +95,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         SCREEN_WIDTH = size.x;
         SCREEN_HEIGHT = size.y;
-        PLAYER_CENTER_X = size.x/2;
-        PLAYER_CENTER_Y = size.y/2;
+        PLAYER_CENTER_X = size.x/2-256/2;
+        PLAYER_CENTER_Y = size.y/2-256/2;
 
 
         //Set up paint
@@ -112,6 +116,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         ironImage = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
         ironImage = Bitmap.createScaledBitmap(ironImage,256,256,false);
 
+        arrow = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
+
 
         playerShip.setSprite(bmap);
         shop.setSprite(spaceStation);
@@ -119,6 +125,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         aste.setSprite(ast);
         aste.width=256;
         aste.height=256;
+        entities.add(aste);
 
         //Generate a random asteroid field
         //TODO make it more uniformly distributed
@@ -179,7 +186,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     //A nice spacey blue
     String backgroundColor = "#17132c";
 
-
+    String collision = "null";
     public void myDraw(Canvas canvas) {
         //Update camera based on player position
         camera = new Camera(new FloatPoint(playerShip.pos.x-PLAYER_CENTER_X, playerShip.pos.y-PLAYER_CENTER_Y));
@@ -187,8 +194,45 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         //Draw background solor
         canvas.drawColor(Color.parseColor(backgroundColor));
 
-        playerShip.update();
 
+
+        updateEntites();
+        renderEntities(canvas);
+       // playerShip.update();
+
+
+        mPaint.setColor(Color.WHITE);
+        int barWidth = 400;
+        int barHeight = 30;
+        mPaint.setTextAlign(Paint.Align.LEFT);
+        canvas.drawText(playerShip.currentHealth+"",0,100,mPaint);
+        canvas.drawRect(0,0,barWidth,barHeight,mPaint);
+
+        mPaint.setColor(Color.BLUE);
+        int xRight = interpolate(barWidth,playerShip.maxFuel,playerShip.currentFuel);
+        canvas.drawRect(0,0,xRight,barHeight,mPaint);
+        //FloatPoint shopText = new
+        //canvas.drawText(collision,shop.x,200,mPaint);
+
+        mPaint.setColor(Color.WHITE);
+        canvas.drawRect(0,60,barWidth,60+barHeight,mPaint);
+
+        mPaint.setColor(Color.RED);
+        xRight = interpolate(barWidth,playerShip.maxHealth,playerShip.currentHealth);
+        canvas.drawRect(0,60,xRight,60+barHeight,mPaint);
+
+        mPaint.setColor(Color.BLACK);
+
+
+
+    }
+
+    public int interpolate(float x1, float y1, float y2){
+
+        return (int)((x1/y1)*y2);
+    }
+
+    public void updateEntites(){
         //Update all of the entities in the world
         //Use an iterator so we can safely remove entities
         Iterator<Entity> it = entities.iterator();
@@ -207,6 +251,9 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                 //TODO why does this work when it already checks for dead?
                 if(e instanceof Asteroid){
                     Asteroid ast = (Asteroid)e;
+                    if(playerShip.collides(ast)){
+                        playerShip.handleCollision(playerShip.collisionDirection(ast));
+                    }
 
                     //If asteroid is dead, spew out the bounty
                     if(ast.dead){
@@ -215,15 +262,27 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                         ArrayList<Item> cargo = ast.dropCargo();
 
                         for(Item z: cargo){
-                           // Log.d("Hit","cargo");
                             z.setSprite(ironImage);
                         }
 
                         //Add cargo to toAdd
                         toAdd.addAll(cargo);
                     }
+                }else if(e instanceof Shop){
+                    Shop s = (Shop)e;
+
+                    if(distance(playerShip,s)>2000){
+                        s.changeText();
+                    }
+
+                }else if(e instanceof Item){
+                    Item itm = (Item)e;
+                    if(playerShip.collides(itm)){
+                        playerShip.cargo.add(itm);
+                        itm.dead = true;
+                    }
                 }
-                e.render(canvas, mPaint, camera);
+                // e.render(canvas, mPaint, camera);
             }
         }
 
@@ -232,11 +291,28 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             entities.add(e);
         }
 
+        playerShip.update();
+    }
+
+    public void renderEntities(Canvas canvas ){
+        for(Entity e: entities){
+            e.render(canvas, mPaint, camera);
+        }
+
         //Draw the player ship
         canvas.save();
-        canvas.rotate(playerShip.angle-45+90, PLAYER_CENTER_X, PLAYER_CENTER_Y);
-        canvas.drawBitmap(playerShip.getSprite(), PLAYER_CENTER_X-playerShip.getSprite().getWidth()/2, PLAYER_CENTER_Y-playerShip.getSprite().getHeight()/2,mPaint);
+        playerShip.render(canvas,mPaint,camera);
+        canvas.rotate(playerShip.angle-45+90, PLAYER_CENTER_X+playerShip.width/2, PLAYER_CENTER_Y+playerShip.height/2);
+        //canvas.drawBitmap(playerShip.getSprite(), PLAYER_CENTER_X-playerShip.getSprite().getWidth()/2, PLAYER_CENTER_Y-playerShip.getSprite().getHeight()/2,mPaint);
+        canvas.drawBitmap(playerShip.getSprite(), PLAYER_CENTER_X, PLAYER_CENTER_Y,mPaint);
+
         canvas.restore();
+    }
+
+    public float distance(Entity a, Entity b){
+        float dx = b.pos.x - a.pos.x;
+        float yx = b.pos.y - a.pos.y;
+        return (float)Math.sqrt((dx*dx)+(yx*yx));
     }
 
     // respond to the SurfaceView being clicked/dragged
@@ -273,7 +349,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             FloatPoint touch = camera.screenToWorldPos(new FloatPoint(e.getX(),e.getY()));
 
             //Calculate the angle between the touch point and the player
-            float theta = (float)Math.atan2((touch.y-playerShip.pos.y),(touch.x-playerShip.pos.x));
+            float theta = (float)Math.atan2((touch.y-(playerShip.pos.y+playerShip.height/2)),(touch.x-(playerShip.pos.x+playerShip.width/2)));
 
             //Set acceleration using trig
             playerShip.setAcc(new FloatPoint((float)Math.cos(theta), (float)Math.sin(theta)));
