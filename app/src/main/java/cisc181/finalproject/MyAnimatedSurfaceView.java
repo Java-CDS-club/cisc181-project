@@ -122,7 +122,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         playerShip.setSprite(bmap);
         shop.setSprite(spaceStation);
-        entities.add(shop);
+       // entities.add(shop);
         aste.setSprite(ast);
         aste.width=256;
         aste.height=256;
@@ -130,22 +130,26 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         //Generate a random asteroid field
         //TODO make it more uniformly distributed
-        for(int i = 0; i < 100; i++){
+        int bound = 50000;
+        for(int i = 0; i < 500; i++){
             Random r = new Random();
-            float randomX = (float)r.nextInt(10000);
-            float randomY = (float)r.nextInt(10000);
+            //float randomX = (float)r.nextInt(10000);
+            //float randomY = (float)r.nextInt(10000);
+            FloatPoint randPos = getPositionInSquare(-bound/2,-bound/2,bound,bound);
             float randomVelX = (float)r.nextInt(10-5+1)-5;
             float randomVelY = (float)r.nextInt(10-5+1)-5;
-            Asteroid a = new Asteroid(new FloatPoint(randomX,randomY), new FloatPoint(randomVelX,randomVelY), new FloatPoint(0,0));
+            Asteroid a = new Asteroid(randPos, new FloatPoint(randomVelX,randomVelY), new FloatPoint(0,0));
             a.width=256;
             a.height=256;
             a.setSprite(ast);
             entities.add(a);
         }
 
+       // SaveLoad.save(entities,context);
+       //entities = SaveLoad.load(context);
 
 
-       testSaveLoad(context);
+       //testSaveLoad(context);
 
 
         SurfaceHolder holder = getHolder();
@@ -159,8 +163,15 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                myThread.setRunning(true);
-                myThread.start();
+               // if (myThread.getState() == Thread.State.NEW) {
+                    myThread.setRunning(true);
+                //Log.d("III","running!");
+                if (myThread.getState() == Thread.State.NEW) {
+                    myThread.start();
+                }
+               // }
+               // }
+
             }
 
             @Override
@@ -172,15 +183,11 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
+                Log.d("mem","jjjjj");
                 boolean retry = true;
-                myThread.setRunning(false);
-                while (retry) {
-                    try {
-                        myThread.join();
-                        retry = false;
-                    }
-                    catch (InterruptedException e) { }
-                }
+               // myThread.setRunning(false);
+//                myThread.stop();
+
             }
         });
 
@@ -192,8 +199,23 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     //A nice spacey blue
     String backgroundColor = "#17132c";
 
+    FloatPoint getPositionInSquare(int x, int y, int width, int height){
+        Random r = new Random();
+        float randomX = r.nextInt(width)+x;
+        float randomY = r.nextInt(height)+y;
+        return new FloatPoint(randomX,randomY);
+    }
+
     String collision = "null";
+    boolean gameOver = false;
+    boolean pause = false;
+
     public void myDraw(Canvas canvas) {
+        Log.d("iii","hjhj");
+        if(playerShip.currentHealth <= 0 || playerShip.currentFuel <= 0){
+            gameOver = true;
+        }
+
         //Update camera based on player position
         camera = new Camera(new FloatPoint(playerShip.pos.x-PLAYER_CENTER_X, playerShip.pos.y-PLAYER_CENTER_Y));
 
@@ -202,8 +224,26 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
 
 
-        updateEntites();
+        if(!gameOver) {
+            updateEntites();
+        }
         renderEntities(canvas);
+
+        if(gameOver){
+            mPaint.setColor(Color.WHITE);
+            mPaint.setTextSize(60);
+
+            mPaint.setTextAlign(Paint.Align.CENTER);
+
+            if(playerShip.currentHealth <= 0){
+                canvas.drawText("You died!",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,mPaint);
+            }
+
+            if(playerShip.currentFuel <= 0){
+                canvas.drawText("You ran out of fuel!",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,mPaint);
+            }
+        }
+        mPaint.setColor(Color.BLACK);
        // playerShip.update();
 
 
@@ -298,6 +338,12 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         }
 
         playerShip.update();
+
+
+    }
+
+    public void gameOver(String message){
+
     }
 
     public void renderEntities(Canvas canvas ){

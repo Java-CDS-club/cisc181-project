@@ -12,6 +12,7 @@ copyright 2017, University of Delaware
 import android.graphics.Canvas;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.util.Log;
 
 public class MyThread extends Thread {
 
@@ -43,6 +44,8 @@ public class MyThread extends Thread {
 
     @Override
     public void run() {
+
+        //Log.d("fff",running+"");
         while (running) {
 
             // draw one time...
