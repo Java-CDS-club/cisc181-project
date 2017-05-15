@@ -60,15 +60,19 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     ArrayList<Entity> entities = new ArrayList<Entity>();
 
     SoundPool sp;
-    int explosion;
-    int laser;
-    int pickupItem;
+    int[] explosions = new int[3];
+    int[] lasers = new int[3];
+    int[] pickupItems = new int[3];
+    int[] takeDamage = new int[3];
     int pickupFuel;
     MediaPlayer booster;
     MediaPlayer music;
     Bitmap ironImage;
     Bitmap spaceStation;
     Bitmap arrow;
+
+    float sfxVol = 0.2f;
+
 
     //Stuff to pass in from the activity
     static int startFuel = 0;
@@ -85,19 +89,33 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         booster.setVolume(0.2f, 0.2f);
         music = MediaPlayer.create(context,R.raw.space);
-        music.setVolume(0.8f,0.8f);
+        music.setVolume(1f,1f);
         music.setLooping(true);
-       // music.start();
+        music.start();
         booster.setLooping(true);
 
         sp = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);  // deprecated from API level 21 on
 
-        laser = sp.load(context,R.raw.laser,1);
-        pickupItem = sp.load(context,R.raw.pickup_item,1);
-        pickupFuel = sp.load(context,R.raw.pickup_fuel,1);
-        explosion = sp.load(context, R.raw.expl, 1);
+        lasers[0] = sp.load(context,R.raw.laser,1);
+        lasers[1] = sp.load(context,R.raw.laser1,1);
+        lasers[2] = sp.load(context,R.raw.laser2,1);
+        pickupItems[0] = sp.load(context,R.raw.pickup_item,1);
+        pickupItems[1] = sp.load(context,R.raw.pickup_item1,1);
+        pickupItems[2] = sp.load(context,R.raw.pickup_item2,1);
 
-        booster.setVolume(0.8f,0.8f);
+        takeDamage[0] = sp.load(context,R.raw.take_damage,1);
+        takeDamage[1] = sp.load(context,R.raw.take_damage1,1);
+        takeDamage[2] = sp.load(context,R.raw.take_damage2,1);
+
+
+
+        pickupFuel = sp.load(context,R.raw.pickup_fuel,1);
+
+        explosions[0] = sp.load(context, R.raw.expl, 1);
+        explosions[0] = sp.load(context, R.raw.expl1, 1);
+        explosions[0] = sp.load(context, R.raw.expl2, 1);
+
+        booster.setVolume(sfxVol, sfxVol);
 
         //Init threads
         myThread = new MyThread(this);
@@ -162,6 +180,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             entities.add(a);
         }
 
+
        // SaveLoad.save(entities,context);
        //entities = SaveLoad.load(context);
 
@@ -201,6 +220,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 Log.d("mem","jjjjj");
+                music.stop();
+                booster.stop();
                 boolean retry = true;
                // myThread.setRunning(false);
 //                myThread.stop();
@@ -301,6 +322,11 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         return (int)((x1/y1)*y2);
     }
 
+    public void playRandomSound(int[] sounds, float volume){
+        int rand = (int)(Math.random()*sounds.length);
+        sp.play(sounds[rand], volume, volume, 0, 0, 1f);
+    }
+
     public void updateEntites(){
         //Update all of the entities in the world
         //Use an iterator so we can safely remove entities
@@ -319,14 +345,17 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                 //For asteroids
                 //TODO why does this work when it already checks for dead?
                 if(e instanceof Asteroid){
+
                     Asteroid ast = (Asteroid)e;
                     if(playerShip.collides(ast)){
                         playerShip.handleCollision(playerShip.collisionDirection(ast));
+                        playRandomSound(takeDamage,sfxVol);
                     }
 
                     //If asteroid is dead, spew out the bounty
                     if(ast.dead){
-                        sp.play(explosion, 1f, 1f, 0, 0, 1f);
+                        playRandomSound(explosions,sfxVol );
+                        //sp.play(explosion, 1f, 1f, 0, 0, 1f);
 
                         ArrayList<Item> cargo = ast.dropCargo();
 
@@ -347,7 +376,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                 }else if(e instanceof Item){
                     Item itm = (Item)e;
                     if(playerShip.collides(itm)){
-                        sp.play(pickupItem, 1f, 1f, 0, 0, 1f);
+                        playRandomSound(pickupItems,sfxVol );
+                        //sp.play(pickupItem, 1f, 1f, 0, 0, 1f);
 
                         playerShip.cargo.add(itm);
                         itm.dead = true;
@@ -373,6 +403,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     public void gameOver(String message){
 
     }
+
+
 
     public void renderEntities(Canvas canvas ){
         for(Entity e: entities){
@@ -410,7 +442,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                     //If it is an asteroid, do damage to it
                     if(ent instanceof Asteroid){
                         Asteroid a = (Asteroid)ent;
-                        sp.play(laser, 1f, 1f, 0, 0, 1f);
+                        playRandomSound(lasers,sfxVol);
+                        //sp.play(laser, 1f, 1f, 0, 0, 1f);
 
                         a.removeHealth(playerShip.damage);
 
