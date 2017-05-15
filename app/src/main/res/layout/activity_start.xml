@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_start"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#17132c"
+    tools:context="cisc181.finalproject.StartActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold|italic"
+        android:textSize="20pt"
+        android:textColor="#ffffff"
+        android:text="Astro-Load"
+        android:id="@+id/title"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="7pt"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:text="Jimmy Skripchuk | Arnav Prasad" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10pt"
+        android:layout_gravity="center"
+        android:layout_marginTop="30px"
+        android:textStyle="bold"
+        android:textColor="#ffffff"
+        android:text="Starting Fuel?" />
+    <RadioGroup
+        android:id="@+id/fuelAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <RadioButton
+            android:text="2,000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:id="@+id/twothou" />
+        <RadioButton
+            android:text="4,000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:id="@+id/fourthou" />
+    </RadioGroup>
+
+    <Button
+        android:text="Begin!"
+        android:textSize="15pt"
+        android:textStyle="bold"
+        android:layout_marginTop="30px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startGame"
+        android:id="@+id/beginButton" />
+    <Button
+        android:text="Quit"
+        android:textSize="15pt"
+        android:textStyle="bold"
+        android:layout_marginTop="30px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="quitGame"
+        android:id="@+id/quitButton" />
+</LinearLayout>

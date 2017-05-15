@@ -10,6 +10,7 @@ copyright 2017, University of Delaware
 */
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -48,7 +49,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     float PLAYER_CENTER_Y = 200;
     float SCREEN_WIDTH = 0;
     float SCREEN_HEIGHT = 0;
-
+    final int picSize = 128;
+    int score = 0;
     //Init objects
     Ship playerShip;
     Asteroid aste = new Asteroid(new FloatPoint(500,500), new FloatPoint(0,0), new FloatPoint(0,0));
@@ -64,6 +66,10 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     Bitmap ironImage;
     Bitmap spaceStation;
     Bitmap arrow;
+
+    //Stuff to pass in from the activity
+    static int startFuel = 0;
+    boolean isHardMode = false;
 
     //Constructor
     public MyAnimatedSurfaceView(Context context, AttributeSet attrs) {
@@ -96,8 +102,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         SCREEN_WIDTH = size.x;
         SCREEN_HEIGHT = size.y;
-        PLAYER_CENTER_X = size.x/2-256/2;
-        PLAYER_CENTER_Y = size.y/2-256/2;
+        PLAYER_CENTER_X = size.x/2-picSize/2;
+        PLAYER_CENTER_Y = size.y/2-picSize/2;
 
 
         //Set up paint
@@ -106,16 +112,19 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
         //Init player
         playerShip = new Ship(new FloatPoint(PLAYER_CENTER_X,PLAYER_CENTER_Y), new FloatPoint(0,0), new FloatPoint(0,0));
+        playerShip.currentFuel=startFuel;
+        if(startFuel == 2000)
+            isHardMode = true;
 
 
         //Image loading
         bmap = BitmapFactory.decodeResource(getResources(), R.drawable.ship);
         ast = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
-        bmap = Bitmap.createScaledBitmap(bmap,256,256,false);
-        ast = Bitmap.createScaledBitmap(ast,256,256,false);
-        spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),256,256,false);
+        bmap = Bitmap.createScaledBitmap(bmap,picSize,picSize,false);
+        ast = Bitmap.createScaledBitmap(ast,picSize,picSize,false);
+        spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),picSize,picSize,false);
         ironImage = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
-        ironImage = Bitmap.createScaledBitmap(ironImage,256,256,false);
+        ironImage = Bitmap.createScaledBitmap(ironImage,picSize,picSize,false);
 
         arrow = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
 
@@ -124,13 +133,13 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         shop.setSprite(spaceStation);
        // entities.add(shop);
         aste.setSprite(ast);
-        aste.width=256;
-        aste.height=256;
+        aste.width=picSize;
+        aste.height=picSize;
         entities.add(aste);
 
         //Generate a random asteroid field
         //TODO make it more uniformly distributed
-        int bound = 50000;
+        int bound = 10000;
         for(int i = 0; i < 500; i++){
             Random r = new Random();
             //float randomX = (float)r.nextInt(10000);
@@ -139,8 +148,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             float randomVelX = (float)r.nextInt(10-5+1)-5;
             float randomVelY = (float)r.nextInt(10-5+1)-5;
             Asteroid a = new Asteroid(randPos, new FloatPoint(randomVelX,randomVelY), new FloatPoint(0,0));
-            a.width=256;
-            a.height=256;
+            a.width=picSize;
+            a.height=picSize;
             a.setSprite(ast);
             entities.add(a);
         }
@@ -211,7 +220,6 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     boolean pause = false;
 
     public void myDraw(Canvas canvas) {
-        Log.d("iii","hjhj");
         if(playerShip.currentHealth <= 0 || playerShip.currentFuel <= 0){
             gameOver = true;
         }
@@ -236,11 +244,13 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             mPaint.setTextAlign(Paint.Align.CENTER);
 
             if(playerShip.currentHealth <= 0){
-                canvas.drawText("You died!",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,mPaint);
+                booster.stop();
+                MainActivity.endGame(0,score);//0 means dead
             }
 
             if(playerShip.currentFuel <= 0){
-                canvas.drawText("You ran out of fuel!",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,mPaint);
+                booster.stop();
+                MainActivity.endGame(1,score);//1 means no fuel
             }
         }
         mPaint.setColor(Color.BLACK);
@@ -251,7 +261,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         int barWidth = 400;
         int barHeight = 30;
         mPaint.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText(playerShip.currentHealth+"",0,100,mPaint);
+        //canvas.drawText(playerShip.currentHealth+"",0,100,mPaint);
         canvas.drawRect(0,0,barWidth,barHeight,mPaint);
 
         mPaint.setColor(Color.BLUE);
@@ -266,6 +276,11 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         mPaint.setColor(Color.RED);
         xRight = interpolate(barWidth,playerShip.maxHealth,playerShip.currentHealth);
         canvas.drawRect(0,60,xRight,60+barHeight,mPaint);
+
+        mPaint.setTextAlign(Paint.Align.RIGHT);
+        mPaint.setColor(Color.WHITE);
+        mPaint.setTextSize(70);
+            canvas.drawText("Score: "+score, SCREEN_WIDTH, 60, mPaint);
 
         mPaint.setColor(Color.BLACK);
 
@@ -326,6 +341,9 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                     if(playerShip.collides(itm)){
                         playerShip.cargo.add(itm);
                         itm.dead = true;
+                        score+=itm.worth;
+                        if(isHardMode)
+                            score+=itm.worth;//double points on hard mode
                     }
                 }
                 // e.render(canvas, mPaint, camera);

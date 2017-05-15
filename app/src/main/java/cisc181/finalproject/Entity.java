@@ -34,8 +34,8 @@ public abstract class Entity {
         this.vel = vel;
         this.acc = acc;
         angle = 0;
-        width=256;
-        height=256;
+        width=128;
+        height=128;
         dead = false;
     }
 

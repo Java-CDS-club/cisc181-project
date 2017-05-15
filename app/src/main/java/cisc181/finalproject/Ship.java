@@ -21,8 +21,8 @@ public class Ship extends Entity {
     int damage = 5;
     Bitmap sprite;
     ArrayList<Item> cargo = new ArrayList<Item>();
-    int currentFuel = 2000;
-    int maxFuel = 2000;
+    int maxFuel = 4000;
+    int currentFuel = maxFuel;
 
     int maxHealth = 100;
     int currentHealth = 100;

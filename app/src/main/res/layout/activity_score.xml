@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_score"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#17132c"
+    tools:context="cisc181.finalproject.ScoreActivity">
+
+    <TextView
+        android:text="GAME OVER"
+        android:textColor="#ffffff"
+        android:textSize="30pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_marginTop="30px"
+        android:textColor="#ffffff"
+        android:text="-DEATH MESSAGE-"
+        android:textSize="20pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/msgBox"/>
+
+    <TextView
+        android:layout_marginTop="30px"
+        android:textColor="#ffffff"
+        android:text="Score:"
+        android:textSize="30pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:layout_marginTop="30px"
+        android:textColor="#ffffff"
+        android:text="I AM A SCORE"
+        android:textSize="20pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/scoreBox"/>
+    <TextView
+        android:layout_marginTop="30px"
+        android:textColor="#ffffff"
+        android:text="High Score:"
+        android:textSize="30pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+    <TextView
+        android:layout_marginTop="30px"
+        android:textColor="#ffffff"
+        android:text="Bob:"
+        android:textSize="30pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/highScoreBox"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#000000"
+        android:textColor="#ffffff"
+        android:inputType="textPersonName"
+        android:hint="ENTER NAME"
+        android:ems="10"
+        android:id="@+id/nameBox"/>
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="finishGame"
+        android:text="Continue" />
+</LinearLayout>
