@@ -61,6 +61,9 @@ public class MyAnimatedSurfaceView extends SurfaceView {
 
     SoundPool sp;
     int explosion;
+    int laser;
+    int pickupItem;
+    int pickupFuel;
     MediaPlayer booster;
     MediaPlayer music;
     Bitmap ironImage;
@@ -70,6 +73,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     //Stuff to pass in from the activity
     static int startFuel = 0;
     boolean isHardMode = false;
+
 
     //Constructor
     public MyAnimatedSurfaceView(Context context, AttributeSet attrs) {
@@ -87,6 +91,10 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         booster.setLooping(true);
 
         sp = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);  // deprecated from API level 21 on
+
+        laser = sp.load(context,R.raw.laser,1);
+        pickupItem = sp.load(context,R.raw.pickup_item,1);
+        pickupFuel = sp.load(context,R.raw.pickup_fuel,1);
         explosion = sp.load(context, R.raw.expl, 1);
 
         booster.setVolume(0.8f,0.8f);
@@ -339,6 +347,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                 }else if(e instanceof Item){
                     Item itm = (Item)e;
                     if(playerShip.collides(itm)){
+                        sp.play(pickupItem, 1f, 1f, 0, 0, 1f);
+
                         playerShip.cargo.add(itm);
                         itm.dead = true;
                         score+=itm.worth;
@@ -400,6 +410,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                     //If it is an asteroid, do damage to it
                     if(ent instanceof Asteroid){
                         Asteroid a = (Asteroid)ent;
+                        sp.play(laser, 1f, 1f, 0, 0, 1f);
+
                         a.removeHealth(playerShip.damage);
 
                     }
