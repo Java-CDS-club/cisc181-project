@@ -24,8 +24,8 @@ public class Ship extends Entity {
     int maxFuel = 4000;
     int currentFuel = maxFuel;
 
-    int maxHealth = 100;
-    int currentHealth = 100;
+    int maxHealth = 50;
+    int currentHealth = maxHealth;
 
     Ship(FloatPoint pos, FloatPoint vel, FloatPoint acc){
         super(pos,vel,acc);
@@ -66,7 +66,7 @@ public class Ship extends Entity {
 
     @Override
     void render(Canvas canvas, Paint paint, Camera camera) {
-        renderBounds(canvas,paint,camera);
+       // renderBounds(canvas,paint,camera);
         //canvas.save();
         //canvas.restore();
     }

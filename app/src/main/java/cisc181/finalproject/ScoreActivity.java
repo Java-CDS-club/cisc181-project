@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ScoreActivity extends AppCompatActivity {
     int score;
@@ -51,6 +52,7 @@ public class ScoreActivity extends AppCompatActivity {
 
     public void setReset(View v){
         resetScore = true;
+        Toast.makeText(ScoreActivity.this, "High Score Rest!", Toast.LENGTH_SHORT).show();
     }
 
     public void resetHighScore(){

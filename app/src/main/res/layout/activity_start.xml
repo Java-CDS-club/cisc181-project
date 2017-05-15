@@ -30,24 +30,24 @@
         android:layout_marginTop="30px"
         android:textStyle="bold"
         android:textColor="#ffffff"
-        android:text="Starting Fuel?" />
+        android:text="Game Difficulty?" />
     <RadioGroup
         android:id="@+id/fuelAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
         <RadioButton
-            android:text="2,000"
+            android:text="Easy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="8pt"
-            android:id="@+id/twothou" />
+            android:id="@+id/easy" />
         <RadioButton
-            android:text="4,000"
+            android:text="Hard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="8pt"
-            android:id="@+id/fourthou" />
+            android:id="@+id/hard" />
     </RadioGroup>
 
     <Button

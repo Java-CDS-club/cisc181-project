@@ -12,14 +12,14 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        RadioButton easyButton = (RadioButton) findViewById(R.id.fourthou);
+        RadioButton easyButton = (RadioButton) findViewById(R.id.easy);
         easyButton.setChecked(true);
     }
 
     public void startGame(View v){
         Intent i = new Intent(this, MainActivity.class);
-        RadioButton hardButton = (RadioButton) findViewById(R.id.twothou);
-        RadioButton easyButton = (RadioButton) findViewById(R.id.fourthou);
+        RadioButton hardButton = (RadioButton) findViewById(R.id.easy);
+        RadioButton easyButton = (RadioButton) findViewById(R.id.hard);
         if(hardButton.isChecked()){
             i.putExtra("startFuel",2000);
         }
