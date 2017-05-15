@@ -12,6 +12,7 @@ import android.widget.TextView;
 public class ScoreActivity extends AppCompatActivity {
     int score;
     int highScore;
+    boolean resetScore = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,5 +44,21 @@ public class ScoreActivity extends AppCompatActivity {
         Intent i = new Intent(this, StartActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
+        if(resetScore){
+            resetHighScore();
+        }
+    }
+
+    public void setReset(View v){
+        resetScore = true;
+    }
+
+    public void resetHighScore(){
+        EditText nameBox = (EditText) findViewById(R.id.nameBox);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString("highScoreName","");
+        edit.putInt("highScore",0);
+        edit.commit();
     }
 }

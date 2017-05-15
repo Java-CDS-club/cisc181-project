@@ -48,15 +48,16 @@
         android:layout_marginTop="30px"
         android:textColor="#ffffff"
         android:text="High Score:"
-        android:textSize="30pt"
+        android:textSize="25pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
     <TextView
-        android:layout_marginTop="30px"
+        android:layout_marginTop="20px"
+        android:layout_marginBottom="10px"
         android:textColor="#ffffff"
         android:text="Bob:"
-        android:textSize="30pt"
+        android:textSize="20pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -77,4 +78,11 @@
         android:layout_height="wrap_content"
         android:onClick="finishGame"
         android:text="Continue" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff0000"
+        android:text="RESET HIGH SCORES" />
 </LinearLayout>
