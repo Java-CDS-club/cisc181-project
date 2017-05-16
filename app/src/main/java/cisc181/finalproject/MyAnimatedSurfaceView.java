@@ -69,6 +69,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     MediaPlayer music;
     Bitmap ironImage;
     Bitmap spaceStation;
+    Bitmap tank;
     Bitmap arrow;
 
     float sfxVol = 0.2f;
@@ -150,6 +151,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         ast = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
         bmap = Bitmap.createScaledBitmap(bmap,picSize,picSize,false);
         ast = Bitmap.createScaledBitmap(ast,picSize,picSize,false);
+        tank = BitmapFactory.decodeResource(getResources(), R.drawable.tank);
         spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),picSize,picSize,false);
         ironImage = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
         ironImage = Bitmap.createScaledBitmap(ironImage,picSize,picSize,false);
@@ -166,19 +168,28 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         entities.add(aste);
 
         //Generate a random asteroid field
-        //TODO make it more uniformly distributed
         int bound = 10000;
         for(int i = 0; i < 500; i++){
             Random r = new Random();
-            //float randomX = (float)r.nextInt(10000);
-            //float randomY = (float)r.nextInt(10000);
             FloatPoint randPos = getPositionInSquare(-bound/2,-bound/2,bound,bound);
             float randomVelX = (float)r.nextInt(10-5+1)-5;
             float randomVelY = (float)r.nextInt(10-5+1)-5;
             Asteroid a = new Asteroid(randPos, new FloatPoint(randomVelX,randomVelY), new FloatPoint(0,0));
             a.width=picSize;
             a.height=picSize;
-            a.setSprite(ast);
+
+            if(Math.random() < .2){
+                Item it = new Item();
+                it.worth = 10;
+                it.name = "fuel";
+                a.setSprite(spaceStation);
+            }else{
+                Item it = new Item();
+                it.worth = 10;
+                it.name = "rock";
+                a.setSprite(ast);
+            }
+
             entities.add(a);
         }
 
@@ -362,7 +373,11 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                         ArrayList<Item> cargo = ast.dropCargo();
 
                         for(Item z: cargo){
-                            z.setSprite(ironImage);
+                            if(z.name.equals("fuel")){
+                                z.setSprite(tank);
+                            }else{
+                                z.setSprite(ironImage);
+                            }
                         }
 
                         //Add cargo to toAdd
@@ -381,11 +396,17 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                         playRandomSound(pickupItems,sfxVol );
                         //sp.play(pickupItem, 1f, 1f, 0, 0, 1f);
 
-                        playerShip.cargo.add(itm);
-                        itm.dead = true;
-                        score+=itm.worth;
-                        if(isHardMode)
-                            score+=itm.worth;//double points on hard mode
+                        if(itm.name == "fuel"){
+                            playerShip.currentFuel+=500;
+                        }else{
+                            playerShip.cargo.add(itm);
+                            itm.dead = true;
+                            score+=itm.worth;
+                            if(isHardMode)
+                                score+=itm.worth;//double points on hard mode
+                        }
+
+
                     }
                 }
                 // e.render(canvas, mPaint, camera);

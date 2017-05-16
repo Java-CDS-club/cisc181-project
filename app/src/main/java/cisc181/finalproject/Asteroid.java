@@ -25,11 +25,11 @@ public class Asteroid extends Entity {
         super(pos,vel,acc);
         health = 10;
 
-        Item i = new Item();
-        i.worth =10;
-        i.name = "meme";
+        //Item i = new Item();
+        //i.worth =10;
+        //i.name = "meme";
 
-        contents.add(i);
+        //contents.add(i);
     }
 
     public void setSprite(Bitmap b){
