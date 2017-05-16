@@ -149,9 +149,10 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         //Image loading
         bmap = BitmapFactory.decodeResource(getResources(), R.drawable.ship);
         ast = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
+        tank = BitmapFactory.decodeResource(getResources(), R.drawable.tank);
+
         bmap = Bitmap.createScaledBitmap(bmap,picSize,picSize,false);
         ast = Bitmap.createScaledBitmap(ast,picSize,picSize,false);
-        tank = BitmapFactory.decodeResource(getResources(), R.drawable.tank);
         spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),picSize,picSize,false);
         ironImage = BitmapFactory.decodeResource(getResources(), R.drawable.iron);
         ironImage = Bitmap.createScaledBitmap(ironImage,picSize,picSize,false);
@@ -182,11 +183,13 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                 Item it = new Item();
                 it.worth = 10;
                 it.name = "fuel";
+                a.contents.add(it);
                 a.setSprite(spaceStation);
             }else{
                 Item it = new Item();
                 it.worth = 10;
                 it.name = "rock";
+                a.contents.add(it);
                 a.setSprite(ast);
             }
 
@@ -393,17 +396,21 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                 }else if(e instanceof Item){
                     Item itm = (Item)e;
                     if(playerShip.collides(itm)){
-                        playRandomSound(pickupItems,sfxVol );
+
                         //sp.play(pickupItem, 1f, 1f, 0, 0, 1f);
+                        playerShip.cargo.add(itm);
+                        itm.dead = true;
+                        score+=itm.worth;
+                        if(isHardMode)
+                            score+=itm.worth;//double points on hard mode
 
                         if(itm.name == "fuel"){
+                           // if()
+                            sp.play(pickupFuel,sfxVol,sfxVol,0,0,1f);
                             playerShip.currentFuel+=500;
                         }else{
-                            playerShip.cargo.add(itm);
-                            itm.dead = true;
-                            score+=itm.worth;
-                            if(isHardMode)
-                                score+=itm.worth;//double points on hard mode
+                            playRandomSound(pickupItems,sfxVol );
+
                         }
 
 

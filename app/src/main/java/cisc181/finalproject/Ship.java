@@ -40,6 +40,13 @@ public class Ship extends Entity {
         currentHealth-=1;
     }
 
+    public void addFuel(int fuel){
+        currentFuel+=fuel;
+        if(currentFuel > maxFuel){
+            currentFuel = maxFuel;
+        }
+    }
+
     @Override
     void update() {
         //If there is no acceleration, slow down the ship
