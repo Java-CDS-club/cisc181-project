@@ -142,7 +142,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         if(startFuel == 2000)
             isHardMode = true;
         if(isHardMode)
-            playerShip.currentHealth/=2;//half health for hard mode
+            playerShip.currentHealth=playerShip.maxHealth / 2;//half health for hard mode
 
 
         //Image loading

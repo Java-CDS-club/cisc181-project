@@ -3,6 +3,7 @@ package cisc181.finalproject;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 
@@ -18,13 +19,14 @@ public class StartActivity extends AppCompatActivity {
 
     public void startGame(View v){
         Intent i = new Intent(this, MainActivity.class);
-        RadioButton hardButton = (RadioButton) findViewById(R.id.easy);
-        RadioButton easyButton = (RadioButton) findViewById(R.id.hard);
-        if(hardButton.isChecked()){
-            i.putExtra("startFuel",2000);
+        RadioButton hardButton = (RadioButton) findViewById(R.id.hard);
+        RadioButton easyButton = (RadioButton) findViewById(R.id.easy);
+        if(hardButton.isChecked()) {
+            i.putExtra("startFuel", 2000);
         }
-        else
-            i.putExtra("startFuel",4000);
+        else if(easyButton.isChecked()) {
+            i.putExtra("startFuel", 4000);
+        }
 
         startActivity(i);
     }

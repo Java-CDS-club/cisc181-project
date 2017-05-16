@@ -24,7 +24,7 @@ public class Ship extends Entity {
     int maxFuel = 4000;
     int currentFuel = maxFuel;
 
-    int maxHealth = 50;
+    int maxHealth = 200;
     int currentHealth = maxHealth;
 
     Ship(FloatPoint pos, FloatPoint vel, FloatPoint acc){
