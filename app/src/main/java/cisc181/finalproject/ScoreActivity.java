@@ -2,6 +2,7 @@ package cisc181.finalproject;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ public class ScoreActivity extends AppCompatActivity {
     int score;
     int highScore;
     boolean resetScore = false;
+    MediaPlayer music;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,12 +31,16 @@ public class ScoreActivity extends AppCompatActivity {
         TextView scoreBox = (TextView) findViewById(R.id.scoreBox);
         TextView highScoreBox = (TextView) findViewById(R.id.highScoreBox);
 
+        music = MediaPlayer.create(getApplicationContext(),R.raw.gameover);
+        music.start();
+
         msgBox.setText(message);
         scoreBox.setText(score + "");
         highScoreBox.setText(highScoreName + ":"+highScore);
     }
 
     public void finishGame(View v){
+        music.stop();
         if(score > highScore) {//update high score
             EditText nameBox = (EditText) findViewById(R.id.nameBox);
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
