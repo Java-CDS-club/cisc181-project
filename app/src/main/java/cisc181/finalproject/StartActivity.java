@@ -20,6 +20,7 @@ public class StartActivity extends AppCompatActivity {
 
         music = MediaPlayer.create(getApplicationContext(),R.raw.title);
         music.start();
+        music.setLooping(true);
 
         easyButton.setChecked(true);
     }
@@ -44,5 +45,11 @@ public class StartActivity extends AppCompatActivity {
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);
         return;
+    }
+
+    public void showInstructions(View v){
+        Intent i = new Intent(this, Instructions.class);
+        music.stop();
+        startActivity(i);
     }
 }

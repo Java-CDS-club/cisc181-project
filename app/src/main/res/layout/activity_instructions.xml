@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_start"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#17132c"
+    tools:context="cisc181.finalproject.StartActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold|italic"
+        android:textSize="20pt"
+        android:textColor="#ffffff"
+        android:text="Instructions"
+        android:id="@+id/title"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20px"
+        android:layout_marginBottom="20px"
+        android:textSize="10pt"
+        android:textColor="#ffffff"
+        android:text="Drag your finger around to fly the rocket ship! It flies towards your finger." />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20px"
+        android:layout_marginBottom="20px"
+        android:textSize="10pt"
+        android:textColor="#ffffff"
+        android:text="Tap on asteroids to destroy them - collecting the cargo gives your points!" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20px"
+        android:layout_marginBottom="20px"
+        android:textSize="10pt"
+        android:textColor="#ffffff"
+        android:text="Tapping on the obvious copyright infringement drops more fuel to use." />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20px"
+        android:layout_marginBottom="20px"
+        android:textSize="10pt"
+        android:textColor="#ffffff"
+        android:text="Play until your health or fuel runs out!" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="50px"
+        android:textSize="10pt"
+        android:textColor="#555555"
+        android:text="Soundtrack by James Skripchuk" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20px"
+        android:onClick="backToStart"
+        android:text="Back" />
+</LinearLayout>

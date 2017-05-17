@@ -72,7 +72,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
     Bitmap tank;
     Bitmap arrow;
 
-    float sfxVol = 0.2f;
+    float sfxVol = 0.3f;
 
 
     //Stuff to pass in from the activity
@@ -151,6 +151,8 @@ public class MyAnimatedSurfaceView extends SurfaceView {
         ast = BitmapFactory.decodeResource(getResources(), R.drawable.asteroid);
         tank = BitmapFactory.decodeResource(getResources(), R.drawable.tank);
 
+        tank = Bitmap.createScaledBitmap(tank,picSize,picSize,false);
+
         bmap = Bitmap.createScaledBitmap(bmap,picSize,picSize,false);
         ast = Bitmap.createScaledBitmap(ast,picSize,picSize,false);
         spaceStation = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.iss),picSize,picSize,false);
@@ -179,7 +181,7 @@ public class MyAnimatedSurfaceView extends SurfaceView {
             a.width=picSize;
             a.height=picSize;
 
-            if(Math.random() < .2){
+            if(Math.random() < .1){
                 Item it = new Item();
                 it.worth = 10;
                 it.name = "fuel";
@@ -407,7 +409,11 @@ public class MyAnimatedSurfaceView extends SurfaceView {
                         if(itm.name == "fuel"){
                            // if()
                             sp.play(pickupFuel,sfxVol,sfxVol,0,0,1f);
-                            playerShip.currentFuel+=500;
+                            if(isHardMode){
+                                playerShip.addFuel(250);
+                            }else{
+                                playerShip.addFuel(500);
+                            }
                         }else{
                             playRandomSound(pickupItems,sfxVol );
 

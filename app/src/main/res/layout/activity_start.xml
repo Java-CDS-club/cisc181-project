@@ -31,6 +31,7 @@
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="Game Difficulty?" />
+
     <RadioGroup
         android:id="@+id/fuelAmount"
         android:layout_width="wrap_content"
@@ -51,10 +52,18 @@
     </RadioGroup>
 
     <Button
+        android:textStyle="bold"
+        android:textSize="15pt"
+        android:id="@+id/instructionsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="showInstructions"
+        android:text="INSTRUCTIONS" />
+    <Button
         android:text="Begin!"
         android:textSize="15pt"
         android:textStyle="bold"
-        android:layout_marginTop="30px"
+        android:layout_marginTop="10px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="startGame"
@@ -63,9 +72,10 @@
         android:text="Quit"
         android:textSize="15pt"
         android:textStyle="bold"
-        android:layout_marginTop="30px"
+        android:layout_marginTop="10px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="quitGame"
+        android:background="#ff0000"
         android:id="@+id/quitButton" />
 </LinearLayout>
